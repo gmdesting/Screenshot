@@ -12,7 +12,7 @@ var eventproxy = require('eventproxy');
 // 本地存储目录
 var dir = '../images';
 
-
+// 1626b6bae951c7-06d1455e088c3b-2d604637-3d10d-1626b6bae96d0
 
 // 创建目录
 mkdirp(dir, function (err) {
@@ -27,18 +27,32 @@ var downloadImg = (function () {
     var i = 0;
     // 下载方法
     var download = function (url, dir, filename, cb, i) {
-        request.head(url, function (err, res, body) {
-            request(url).pipe(
+        let options = {
+            url: url,
+            headers: {
+                'referer': 'https://manhua.dmzj.com/migongfan/29778.shtml'
+            }
+        }
+        request.head(options, function (err, res, body) {
+            console.log(body)
+            request(options).pipe(
                 fs.createWriteStream(dir + "/" + filename)
             );
-            console.log('第' + i +'张图片，下载完成')
+            console.log('第' + i + '张图片，下载完成')
             cb && cb()
         });
     };
     var load = function (url, cbload) {
         console.log('开始下载图……')
-        request(url, function (error, response, body) {
+        let options = {
+            url: url,
+            headers: {
+                'referer': 'https://manhua.dmzj.com/migongfan/29778.shtml'
+            }
+        }
+        request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
+                console.log(body)
                 var $ = cheerio.load(body);
                 // $('.photo-list-padding a img').each(function() {
                 //     var src = $(this).attr('src');
@@ -47,7 +61,7 @@ var downloadImg = (function () {
                 // });
                 links = []
                 // console.log(body)
-                $('div img').each(function () {
+                $('img').each(function () {
                     var src = $(this).attr('src');
                     // src = src.replace(/t_s208x130c5/, 't_s960x600c5');
                     links.push(src);
@@ -55,21 +69,22 @@ var downloadImg = (function () {
                 console.log(links)
                 // console.log(links)
                 // 每次只执行一个异步操作
-                async.mapSeries(links, function (item, callback) {
-                    i++
-                    download(item, dir, i + item.substr(-4, 4), () => {
-                        callback()
-                    }, i);
-                }, function (err, results) {
-                    // console.log()
-                    cbload && cbload(err)
-                });
+                // async.mapSeries(links, function (item, callback) {
+                //     i++
+                //     download(item, dir, i + item.substr(-4, 4), () => {
+                //         callback()
+                //     }, i);
+                // }, function (err, results) {
+                //     // console.log()
+                //     cbload && cbload(err)
+                // });
 
             }
         });
     }
     return {
-        load: load
+        load: load,
+        download: download
     }
 }())
 
@@ -77,11 +92,13 @@ var urlImg = [
     'https://manhua.dmzj.com/migongfan/51601.shtml#@page=2'
 ]
 
-async.mapSeries(urlImg, (item,cb) => {
-    downloadImg.load(item, err => {
-        cb()
-    })
-})
+// async.mapSeries(urlImg, (item,cb) => {
+//     downloadImg.load(item, err => {
+//         cb()
+//     })
+// })
+
+downloadImg.download('https://images.dmzj.com/m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/%E7%AC%AC01%E8%AF%9D/0002.jpg', dir, 'dddd.jpg')
 
 
 // 发送请求

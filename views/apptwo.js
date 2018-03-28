@@ -5,14 +5,12 @@ var cheerio = require("cheerio");
 var mkdirp = require('mkdirp');
 var async = require('async');
 var eventproxy = require('eventproxy');
-
-// 目标网址
-// var url = 'http://desk.zol.com.cn/meinv/1920x1080/2.html';
+// var http = require('http');
+// var querystring =require('querystring');
 
 // 本地存储目录
 var dir = '../images';
-
-
+// var referer = 'https://manhua.dmzj.com/migongfan/51601.shtml'
 
 // 创建目录
 mkdirp(dir, function (err) {
@@ -27,39 +25,60 @@ var downloadImg = (function () {
     var i = 0;
     // 下载方法
     var download = function (url, dir, filename, cb, i) {
-        request.head(url, function (err, res, body) {
-            request(url).pipe(
+        var options={
+            url: url,
+            headers:{
+                referer: 'https://manhua.dmzj.com/migongfan/51601.shtml'
+            }
+        }
+        request.head(options, function (err, res, body) {
+            request(options).pipe(
                 fs.createWriteStream(dir + "/" + filename)
             );
             console.log('第' + i +'张图片，下载完成')
             cb && cb()
         });
     };
-    var load = function (url, cbload) {
+    var load = function (options, cbload) {
+        var options={
+            url: url,
+            headers:{
+                referer: 'https://manhua.dmzj.com/migongfan/51601.shtml'
+            }
+        }
         console.log('开始下载图……')
-        request(url, function (error, response, body) {
+        request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 var $ = cheerio.load(body);
-                // $('.photo-list-padding a img').each(function() {
+                var evalstring = eval($('head')[0].children[9].children[0].data.substring(70,924))
+                var arrpic = eval(pages)
+                // console.log(eval(pages))
+                // console.log(links)
+                // links = [ 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/01%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/02%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/03%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/04%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/05%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/06%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/07%20%E5%89%AF%E6%9C%AC.jpg',
+                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/08%20%E5%89%AF%E6%9C%AC.jpg',
+                //  ]
+                // $('#center_box img').each(function () {
                 //     var src = $(this).attr('src');
-                //     src = src.replace(/t_s208x130c5/, 't_s960x600c5');
                 //     links.push(src);
                 // });
-                links = []
+                links.push('m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/09%20%E5%89%AF%E6%9C%AC.jpg')
                 // console.log(body)
-                $('div img').each(function () {
-                    var src = $(this).attr('src');
-                    // src = src.replace(/t_s208x130c5/, 't_s960x600c5');
-                    links.push(src);
-                });
-                console.log(links)
-                // console.log(links)
-                // 每次只执行一个异步操作
+                // // 每次只执行一个异步操作
                 async.mapSeries(links, function (item, callback) {
+                    console.log(item)
                     i++
-                    download(item, dir, i + item.substr(-4, 4), () => {
-                        callback()
-                    }, i);
+                    var hostpic = 'https://images.dmzj.com/' + item
+                    // if(i < arrpic.length+1){
+                        download(hostpic, dir, i + item.substr(-4, 4), () => {
+                            callback()
+                        }, i);
+                    // }
                 }, function (err, results) {
                     // console.log()
                     cbload && cbload(err)
@@ -69,50 +88,22 @@ var downloadImg = (function () {
         });
     }
     return {
-        load: load
+        load: load,
+        download:download
     }
 }())
 
-var urlImg = [
-    'https://manhua.dmzj.com/migongfan/51601.shtml#@page=2'
-]
+// downloadImg.download('https://images.dmzj.com/m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/%E7%AC%AC01%E8%AF%9D/0002.jpg',dir,'dddd.jpg')
 
-async.mapSeries(urlImg, (item,cb) => {
+var url = 'https://manhua.dmzj.com/migongfan/51601.shtml#@page=2'
+
+async.mapSeries(url, (item,cb) => {
     downloadImg.load(item, err => {
         cb()
     })
 })
 
 
-// 发送请求
+// var page = eval(function(p,a,c,k,e,d){e=function(c){return c.toString(36)};if(!''.replace(/^/,String)){while(c--){d[c.toString(a)]=k[c]||c.toString(a)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('l h=h=\'["m\\/%5%6%7%0%9%3%1%2%8\\/c\\/k%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/j%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/i%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/n%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/q%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/s%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/r%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/o%g%0%f%d%a%e%b.4","m\\/%5%6%7%0%9%3%1%2%8\\/c\\/p%g%0%f%d%a%e%b.4"]\';',29,29,'E5|E9|A5|AB|jpg|E8|BF|B7|AD|AE|E6|AC|00|AF|9C|89|20|pages|03|02|01|var||04|08|09|05|07|06'.split('|'),0,{}))
 
-// for (var i = 0; i < 5; i++) {
-//     //console.log(i); 
-//     (function (i) {
-//         url = 'http://www.boqii.com/tag/23634/'
-//         request(url, function (error, response, body) {
-//             if (!error && response.statusCode == 200) {
-//                 var $ = cheerio.load(body);
-//                 // $('.photo-list-padding a img').each(function() {
-//                 //     var src = $(this).attr('src');
-//                 //     src = src.replace(/t_s208x130c5/, 't_s960x600c5');
-//                 //     links.push(src);
-//                 // });
-//                 $('.art_list a img').each(function () {
-//                     var src = $(this).attr('src');
-//                     // src = src.replace(/t_s208x130c5/, 't_s960x600c5');
-//                     links.push(src);
-//                 });
-//                 // 每次只执行一个异步操作
-//                 async.mapSeries(links, function (item, callback) {
-//                     console.log(item)
-//                     download(item, dir, i + item.substr(-4, 4));
-//                     callback(null, item);
-//                 }, function (err, results) {
-
-//                 });
-//             }
-//         });
-
-//     })(i)
-// }
+// console.log(eval(pages))

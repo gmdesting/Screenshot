@@ -17,8 +17,10 @@
     "debug": "~2.6.9",
     "eventproxy": "^1.0.0",
     "express": "~4.16.0",
+    "http": "^0.0.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
-    "morgan": "~1.9.0"
+    "morgan": "~1.9.0",
+    "querystring": "^0.2.0"
   }
 }

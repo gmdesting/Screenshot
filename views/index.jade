@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  div#clickapp 点击开始爬
+  script window.onload = function(){var btn = document.getElementById("clickapp");btn.addEventListener("click",eventOne);}
+  script var eventOne = function(){ alert("第一个监听事件");} 
+

@@ -25,9 +25,9 @@ var downloadImg = (function () {
     var i = 0;
     // 下载方法
     var download = function (url, dir, filename, cb, i) {
-        var options={
+        var options = {
             url: url,
-            headers:{
+            headers: {
                 referer: 'https://manhua.dmzj.com/migongfan/51601.shtml'
             }
         }
@@ -39,49 +39,45 @@ var downloadImg = (function () {
             cb && cb()
         });
     };
-    var load = function (options, cbload) {
-        var options={
+    var load = function (url, cbload) {
+        var options = {
             url: url,
-            headers:{
-                referer: 'https://manhua.dmzj.com/migongfan/51601.shtml'
+            headers: {
+                referer: url
             }
         }
         console.log('开始下载图……')
         request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                console.log(body)
+                // console.log(body)
                 var $ = cheerio.load(body);
-                var evalstring = eval($('head')[0].children[9].children[0].data.substring(70,924))
-                var arrpic = eval(pages)
+                var evalstring = eval($('head')[0].children[9].children[0].data.substring(70, 924))
+                links = eval(pages)
                 // console.log(eval(pages))
                 // console.log(links)
-                // links = [ 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/01%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/02%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/03%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/04%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/05%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/06%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/07%20%E5%89%AF%E6%9C%AC.jpg',
-                // 'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/08%20%E5%89%AF%E6%9C%AC.jpg',
-                //  ]
+                // links = ['m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/01%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/02%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/03%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/04%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/05%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/06%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/07%20%E5%89%AF%E6%9C%AC.jpg',
+                //     'm/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/08%20%E5%89%AF%E6%9C%AC.jpg',
+                // ]
                 // $('#center_box img').each(function () {
                 //     var src = $(this).attr('src');
                 //     links.push(src);
                 // });
-                links.push('m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/09%20%E5%89%AF%E6%9C%AC.jpg')
+                // links.push('m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/00/09%20%E5%89%AF%E6%9C%AC.jpg')
                 // console.log(body)
                 // // 每次只执行一个异步操作
                 async.mapSeries(links, function (item, callback) {
-                    console.log(item)
                     i++
-                    var hostpic = 'https://images.dmzj.com/' + item
-                    // if(i < arrpic.length+1){
-                        download(hostpic, dir, i + item.substr(-4, 4), () => {
-                            callback()
-                        }, i);
-                    // }
+                    var hostpic = 'https://images.dmzj.com/' + item;
+                    download(hostpic, dir, i + item.substr(-4, 4), () => {
+                        callback()
+                    }, i);
                 }, function (err, results) {
-                    // console.log()
                     cbload && cbload(err)
                 });
 
@@ -90,15 +86,17 @@ var downloadImg = (function () {
     }
     return {
         load: load,
-        download:download
+        download: download
     }
 }())
 
 // downloadImg.download('https://images.dmzj.com/m/%E8%BF%B7%E5%AE%AB%E9%A5%AD/%E7%AC%AC01%E8%AF%9D/0002.jpg',dir,'dddd.jpg')
 
-var url = 'https://manhua.dmzj.com/migongfan/51601.shtml#@page=2'
-
-async.mapSeries(url, (item,cb) => {
+var list = [
+    'https://manhua.dmzj.com/migongfan/51601.shtml#@page=2'
+];
+async.mapSeries(list, (item,cb) => {
+    console.log(item)
     downloadImg.load(item, err => {
         cb()
     })

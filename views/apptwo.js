@@ -35,7 +35,7 @@ var downloadImg = (function () {
             request(options).pipe(
                 fs.createWriteStream(dir + "/" + filename)
             );
-            console.log('第' + i +'张图片，下载完成')
+            console.log('第' + i + '张图片，下载完成')
             cb && cb()
         });
     };
@@ -49,6 +49,7 @@ var downloadImg = (function () {
         console.log('开始下载图……')
         request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
+                console.log(body)
                 var $ = cheerio.load(body);
                 var evalstring = eval($('head')[0].children[9].children[0].data.substring(70,924))
                 var arrpic = eval(pages)

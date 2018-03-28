@@ -96,7 +96,6 @@ var list = [
     'https://manhua.dmzj.com/migongfan/51601.shtml#@page=2'
 ];
 async.mapSeries(list, (item,cb) => {
-    console.log(item)
     downloadImg.load(item, err => {
         cb()
     })

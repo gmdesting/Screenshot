@@ -1,7 +1,8 @@
 //爬图
-"devDependencies": {
-    "cheerio": "^0.18.0",
-    "fs": "0.0.2",
-    "mkdirp": "^0.5.0",
-    "request": "^2.51.0"
-},
+
+//目标网站 动漫之家
+
+// banpai合作
+https://github.com/banpai
+
+//运行 apptwog.js文件

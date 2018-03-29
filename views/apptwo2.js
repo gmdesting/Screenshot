@@ -76,7 +76,7 @@ var downloadImg = (function () {
  
 // 选择漫画的首页url
 var manhuaurl = 'https://manhua.dmzj.com/migongfan/'
-// 漫画名称】
+// 漫画名称
 var manhuaname = ''
 // 漫画章节list
 var chapterlist = []
@@ -89,7 +89,6 @@ request(manhuaurl, function (error, response, body) {
         manhuaname = $('.anim_title_text h1').text()
         $(".cartoon_online_border ul li a").each(function(){
             var manhuatitle = $(this).attr('title').match(/-(\S*)/)[1]
-            // console.log($(this).attr('title').match(/(\S*)-(\S*)/)[1])
             var chapter = host + $(this).attr('href')
             manhuatitlelist.push(manhuatitle)
             chapterlist.push(chapter);
@@ -101,8 +100,3 @@ request(manhuaurl, function (error, response, body) {
         })
     }
 })
-// async.mapSeries(urllist, (item,cb) => {
-//     downloadImg.load(item, err => {
-//         cb()
-//     })
-// })

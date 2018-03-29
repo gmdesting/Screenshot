@@ -69,3 +69,7 @@ async.mapSeries(urlImg, (item,cb) => {
         cb()
     })
 })
+
+
+// var manhuatitle = $(this).attr('title').match(/-(\S*)/)[1]
+// manhuatitlelist.push(manhuatitle)
